@@ -26,27 +26,42 @@ public class FloorServlet extends HttpServlet {
                     showFormInsert(req, resp);
                     break;
                 case "delete":
-                    deleteProduct(req, resp);
+                    deleteFloor(req, resp);
                     break;
                 default:
                     FloorDAO floorDAO = new FloorDAO();
                     List<Floor> floors = floorDAO.getALLFloor();
                     System.out.println(floors);
                     req.setAttribute("floors", floors);
-                    req.getRequestDispatcher("/floor/list.jsp").forward(req, resp);
+                    req.getRequestDispatcher("floor/list.jsp").forward(req, resp);
             }
         } catch (SQLException e) {
             throw new ServletException(e);
         }
     }
 
-    private void deleteProduct(HttpServletRequest req, HttpServletResponse resp) {
+    private void deleteFloor(HttpServletRequest req, HttpServletResponse resp) {
+        String floorCode = req.getParameter("floorCode");
+        FloorDAO floorDAO = new FloorDAO();
+        if (floorCode != null && !floorCode.isEmpty()) {
+            floorDAO.deleteFloor(floorCode);
+        }
+        List<Floor> floors = floorDAO.getALLFloor();
+        req.setAttribute("floor", floors);
+        req.setAttribute("floors", floors);
+        try {
+            req.getRequestDispatcher("floor/list.jsp").forward(req, resp);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     private void showFormInsert(HttpServletRequest req, HttpServletResponse resp) throws
             ServletException, SQLException, IOException {
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/floors/create.jsp");
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("floor/create.jsp");
         requestDispatcher.forward(req, resp);
     }
 
@@ -58,14 +73,13 @@ public class FloorServlet extends HttpServlet {
             case "create":
                 insertFloor(req, resp);
                 break;
-            case "update":
         }
 
     }
 
     private void insertFloor(HttpServletRequest req, HttpServletResponse resp) {
         FloorDAO floorDAO = new FloorDAO();
-        String floorCode  = req.getParameter("maMB");
+        String floorCode = req.getParameter("maMB");
         double area = Double.parseDouble(req.getParameter("dienTich"));
         String status = req.getParameter("trangThai");
         int floorType = Integer.parseInt(req.getParameter("tang"));
@@ -74,7 +88,7 @@ public class FloorServlet extends HttpServlet {
         double price = Double.parseDouble(req.getParameter("giaChoThue"));
         Date startDate = Date.valueOf(req.getParameter("ngayBatDau"));
         Date endDate = Date.valueOf(req.getParameter("ngayKetThuc"));
-        Floor floor = new Floor(floorCode,area,status,floorType,officeType,describe,price,startDate,endDate);
+        Floor floor = new Floor(floorCode, area, status, floorType, officeType, describe, price, startDate, endDate);
         floorDAO.createFloor(floor);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/floor/create.jsp");
         try {

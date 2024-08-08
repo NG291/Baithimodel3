@@ -53,7 +53,7 @@ public class FloorDAO implements IFloorDAO{
 
     @Override
     public void createFloor(Floor floor) {
-        String insert ="INSERT INTO Floor (MaMB, DienTich, TrangThai, Tang, LoaiVanPhong,MoTa ,GiaChoThue, NgayBatDau, NgayKetThuc) VALUES (?,?, ?,?,?,?,?,?,)";
+        String insert ="INSERT INTO Floor (MaMB, DienTich, TrangThai, Tang, LoaiVanPhong,MoTa ,GiaChoThue, NgayBatDau, NgayKetThuc) VALUES (?,?, ?,?,?,?,?,?,?)";
         try(Connection connection = getConnection(); PreparedStatement preparedStatement= connection.prepareStatement(insert)) {
             preparedStatement.setString(1,floor.floorCode);
             preparedStatement.setDouble(2,floor.area);
@@ -72,16 +72,17 @@ public class FloorDAO implements IFloorDAO{
 
     @Override
     public boolean deleteFloor(String floorCore) {
-        String delete = "DELETE FROM products WHERE id=?";
-        boolean rowDelete;
-        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete)) {
-            preparedStatement.setInt(1, id);
-            rowDelete = preparedStatement.executeUpdate() > 0;
+        String sql = "DELETE FROM floor WHERE MaMB = ?";
+        boolean rowDeleted;
+        try (Connection connection = getConnection();PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, floorCore);
+            rowDeleted = statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return rowDelete;
+        return rowDeleted;
     }
+
 
     @Override
     public Floor findById(String floorCore) {
